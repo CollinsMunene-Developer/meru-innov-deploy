@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
     gettext \
-    # Additional dependencies that might be useful for Django
     nodejs \
     npm \
+    docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
@@ -27,7 +27,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Install Python packages for Django development
@@ -49,10 +49,13 @@ RUN pip install --no-cache-dir \
     ipykernel \
     notebook
 
-# Install Azure CLI (if needed)
+# Install Docker (alternative method to get the latest version)
+RUN curl -fsSL https://get.docker.com | bash
+
+# Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# Install AWS CLI (if needed)
+# Install AWS CLI
 RUN apt-get update && apt-get install -y awscli && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
