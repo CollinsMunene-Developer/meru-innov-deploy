@@ -1,0 +1,62 @@
+# .devcontainer/Dockerfile.dev
+FROM python:3.9-slim
+
+# Prevent Python from writing pyc files and from buffering stdout/stderr
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# System dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    gettext \
+    # Additional dependencies that might be useful for Django
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# Install Python packages for Django development
+RUN pip install --no-cache-dir \
+    django \
+    djangorestframework \
+    django-debug-toolbar \
+    django-crispy-forms \
+    django-environ \
+    psycopg2 \
+    gunicorn \
+    black \
+    pylint \
+    pylint-django \
+    pytest \
+    pytest-django \
+    pytest-cov \
+    coverage \
+    ipykernel \
+    notebook
+
+# Install Azure CLI (if needed)
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# Install AWS CLI (if needed)
+RUN apt-get update && apt-get install -y awscli && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER $USERNAME
