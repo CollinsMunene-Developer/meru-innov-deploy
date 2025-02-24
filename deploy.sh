@@ -59,7 +59,7 @@ containerAppName="${envPrefix}-${projectPrefix}-yourworkername"
 registryUrl="${envPrefix}${projectPrefix}contregistry.azurecr.io"
 
 # Set additional variables
-repoUrl="https://github.com/CollinsMunene-Developer/endo-image-processing"
+repoUrl="https://github.com/CollinsMunene-Developer/meru-innov-deploy"
 branch="main"
 
 # MAIN LOGIC ============================================================================
